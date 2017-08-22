@@ -1,4 +1,4 @@
-PROGRAM TRACMASS
+PROGRAM main
  
   USE mod_seed, only:  nqua, nff, num
   USE mod_grid, only:  dyu, dxv
@@ -62,6 +62,6 @@ PROGRAM TRACMASS
   call loop
   call close_outfiles
 
-end PROGRAM TRACMASS
+end PROGRAM main
 
 
