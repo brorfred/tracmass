@@ -20,6 +20,8 @@ module mod_print
   USE mod_tracer
   USE mod_sed
 
+  USE mod_diffusion, only: ah,av
+  
   implicit none
 
   CHARACTER(79)                       :: thinline, thickline
@@ -230,6 +232,7 @@ CONTAINS
 #ifdef sediment
     print *,nsed     ,' trajectories sedimented'
     print *,nsusp    ,' trajectories resuspended'
+
     call writedata(19) !end
     
 #endif
@@ -237,6 +240,7 @@ CONTAINS
     print *,nrh0,' particles outside density range'
 #endif
     print *,nloop,' infinite loops'
+    !print *,cornerError ,' trajectories with corner errors'
     print *,nerror,' particles flagged with errors'
     print *,ntractot-nout-nrh0-nerror,' particles in domain'
     print *, thinline !--------------------------------------------------- 
