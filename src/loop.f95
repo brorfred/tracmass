@@ -19,7 +19,7 @@ SUBROUTINE loop
                           niter, lbas, scrivi, subvol
   USE mod_grid,     only: imt, jmt, km, kmt, dyu, dxv, dxdy, dxyz, dz, dzt, &
                           mask, iter, nsm, nsp, hs, calc_dxyz, nperio !joakim
-  use mod_vel,      only: uflux, vflux, wflux
+  use mod_vel,      only: uflux, vflux, wflux,uvel,vvel
   USE mod_seed,     only: ff, nff, seedTime, seed
   USE mod_domain,   only: timax, jens, jenn, iene, ienw
   USE mod_vel,      only: degrade_counter, degrade_time
@@ -37,12 +37,15 @@ SUBROUTINE loop
 
   ! === Loop variables ===
   INTEGER                                    :: i,  j,  k, l, m, n
+  ! === Loop variables ===
+  REAL*8                                     :: rnum
   ! === Variables to interpolate fields ===
   REAL                                       :: temp, salt, dens
   REAL                                       :: temp2, salt2, dens2
   ! === Error Evaluation ===
   INTEGER                                    :: errCode
   INTEGER                                    :: landError=0, boundError=0
+  INTEGER                                    :: cornerError=0
   REAL                                       :: zz
   
   call print_start_loop
@@ -209,6 +212,7 @@ SUBROUTINE loop
         niter  =  nrj(4,ntrac)
         ts     =  dble(nrj(5,ntrac))
         tss    =  0.d0
+
         
 #ifdef rerun
         lbas=nrj(8,ntrac)
@@ -245,7 +249,8 @@ SUBROUTINE loop
            
            nrj(7,ntrac)=0
 #if defined fixedtimestep 
-           intrpg = 0.d0  ! mimics Ariane's lack of linear interpolation of the velocity fields
+           intrpg = 0.d0  ! mimic Ariane's lack of linear interpolation of
+                          ! the velocity fields
 #else
            intrpg = dmod(ts,1.d0) ! time interpolation constant between 0 and 1
 #endif
@@ -276,7 +281,7 @@ SUBROUTINE loop
            call errorCheck('coordBoxError' ,errCode)
            call errorCheck('infLoopError'  ,errCode)
            if (errCode.ne.0) cycle ntracLoop
-
+           
            ! === write trajectory ===                       
 #ifdef tracer
            if(ts == dble(int(ts, 8))) then 
@@ -326,6 +331,7 @@ SUBROUTINE loop
            ! === calculate the new positions of the particle ===    
            call pos(ia,iam,ja,ka,ib,jb,kb,x0,y0,z0,x1,y1,z1)
            !call errorCheck('longjump', errCode)
+
            
            if (nperio == 6) then
               ! === north fold cyclic for the ORCA grids ===
@@ -403,25 +409,34 @@ SUBROUTINE loop
            
            if (ja>jmt) ja = jmt - (ja - jmt)
            if (jb>jmt) jb = jmt - (jb - jmt)
-
+           
            call errorCheck('boundError', errCode)
            if (errCode.ne.0) cycle ntracLoop
            call errorCheck('landError', errCode)
            if (errCode.ne.0) cycle ntracLoop
            call errorCheck('bottomError', errCode)
-       !    if (errCode.ne.0) cycle ntracLoop
+           !    if (errCode.ne.0) cycle ntracLoop
            call errorCheck('airborneError', errCode)
            if (errCode.ne.0) cycle ntracLoop
-           
+
            call errorCheck('corrdepthError', errCode)
 !           if (errCode.ne.0) cycle ntracLoop
            call errorCheck('cornerError', errCode)
            if (errCode.ne.0) cycle ntracLoop
+
+
+
            
            ! === diffusion, which adds a random position ===
            ! === position to the new trajectory          ===
 #if defined diffusion     
-           call diffuse(x1,y1,z1,ib,jb,kb,dt)
+           !call diffuse(x1,y1,z1,ib,jb,kb,dt)
+           !call random_seed()
+           call random_number(rnum)
+           x1 = x1 + (rnum - 0.5) * 0.01
+           call random_number(rnum)
+           y1 = y1 + (rnum - 0.5) * 0.01
+
 #endif
            ! === end trajectory if outside chosen domain === 
            nendloop: do k=1,nend
@@ -517,8 +532,9 @@ return
      subroutine errorCheck(teststr,errCode)
        CHARACTER (len=*),intent(in)        :: teststr    
        INTEGER                             :: verbose = 1
-       INTEGER                             :: strict  = 1
+       INTEGER                             :: strict  = 0
        INTEGER,intent(out)                 :: errCode
+       INTEGER                             :: xi,yi
        REAL, save                          :: dxmax = 0, dymax = 0
        INTEGER, save                       :: dxntrac, dyntrac
        CHARACTER(79)                       :: thinline, thickline
@@ -528,17 +544,17 @@ return
        thinline  = "-----------------------------------------------" // &
                    "-----------------------------------------------"
        errCode = 0
-       
+
        select case (trim(teststr))
        case ('infLoopError')
-          if(niter-nrj(4,ntrac) > 30000) then ! break infinite loops
+          if(niter-nrj(4,ntrac) > 300) then ! break infinite loops
              if (verbose == 2) then
                 print *, thickline !========================================
                 print *,'Warning: Particle in infinite loop '
                 print *, thinline !-----------------------------------------
                 print '(A,I7.7,A,I6.6,A,I7.7)', ' ntrac : ', ntrac,     & 
-                                          ' niter : ', niter,     &
-                                          '    nrj : ', nrj(ntrac,4)
+                                                ' niter : ', niter,     &
+                                               '    nrj : ', nrj(4,ntrac)
                 call print_grd
                 call print_pos
 
@@ -715,7 +731,19 @@ return
         case ('airborneError')
            ! if trajectory above sea level,
            ! then put back in the middle of shallowest layer (evaporation)
-           if( z1.ge.dble(KM) ) then
+           if( z1 > dble(km) ) then
+              print *,z1,km
+              print *,"z1 is larger than km using >"
+           end if
+
+           if( z1.gt.dble(km) ) then
+              print *,z1,km
+              print *,"z1 is larger than km using .gt."
+           end if
+           if( z1 > dble(km) ) then
+              if (verbose == 1) then
+                 print *,'Particle airborne', z1, dble(KM-kmt(ib,jb))
+              end if
               z1=dble(KM)-0.5d0
               kb=KM
               errCode = -50
@@ -727,31 +755,92 @@ return
               if(kb == KM+1) kb=KM  ! (should perhaps be removed)
               errCode = -52
            endif
-           case ('cornerError')
-              ! problems if trajectory is in the exact location of a corner
+        case ('cornerError')
+           ! problems if trajectory is in the exact location of a corner
+!!$           if (mask(min(imt,ib+1),jb) == 0) then
+!!$              if (mask(ib, max(1, jb-1)) == 0) then
+!!$                 !pr1int *,'corner problem +-',ntrac, ib, jb
+!!$                 x1=dble(ib)-1.5d0
+!!$                 y1=dble(jb)+1.5d0
+!!$                 cornerError = cornerError + 1
+!!$              else if (mask(ib, min(jmt,jb+1))==0) then
+!!$                 !print *,'corner problem ++',ntrac, ib, jb
+!!$                 x1=dble(ib)-1.5d0
+!!$                 y1=dble(jb)-1.5d0
+!!$                 cornerError = cornerError + 1
+!!$              end if
+!!$           else if (mask(max(1,ib-1),jb) == 0) then
+!!$              if (mask(ib,max(1,jb-1))==0) then
+!!$                 !print *,'corner problem --',ntrac, ib, jb
+!!$                 x1=dble(ib)+1.5d0
+!!$                 y1=dble(jb)+1.5d0
+!!$                 cornerError = cornerError + 1
+!!$              else if (mask(ib,min(jmt,jb+1))==0) then
+!!$                 !print *,'corner problem -+',ntrac, ib, jb
+!!$                 x1=dble(ib)+1.5d0
+!!$                 y1=dble(jb)-1.5d0
+!!$                 cornerError = cornerError + 1
+!!$              end if
            if(x1 == dble(idint(x1)) .and. y1 == dble(idint(y1))) then
-              !print *,'corner problem',ntrac,x1,x0,y1,y0,ib,jb
-              !print *,'ds=',ds,dse,dsw,dsn,dss,dsu,dsd,dsmin
-              !stop 34957
-              ! corner problems may be solved the following way 
-              ! but should really not happen at all
-              if(ds == dse .or. ds == dsw) then
-                 if(y1.ne.y0) then
-                    y1=y0 ; jb=ja
-                 else
-                    y1=dble(jb)-0.5d0
-                 endif
-              elseif(ds == dsn .or. ds == dss) then
-                 if(y1.ne.y0) then
-                    x1=x0 ; ib=ia 
-                 else
-                    x1=dble(ib)-0.5d0
-                 endif
-              else
-                 x1=dble(ib)-0.5d0
-                 y1=dble(jb)-0.5d0
-              endif
+              !xi = idint(x1)
+              !yi = idint(y1)
+              !print *,'corner problem for trajectory ',ntrac
+!!$
+!!$              print *, mask(xi-2:xi+2,yi+2)             
+!!$              print *, mask(xi-2:xi+2,yi+1)
+!!$              print *, mask(xi-2:xi+2,yi)
+!!$              print *, mask(xi-2:xi+2,yi-1)
+!!$              print *, mask(xi-2:xi+2,yi-2)
+!!$              print *, '  '
+!!$              write (*,44), uvel(xi-2:xi+2,yi+2, kb)             
+!!$              write (*,44), uvel(xi-2:xi+2,yi+1, kb)
+!!$              write (*,44), uvel(xi-2:xi+2,yi  , kb)
+!!$              write (*,44), uvel(xi-2:xi+2,yi-1, kb)
+!!$              write (*,44), uvel(xi-2:xi+2,yi-2, kb)
+!!$              print *, '  '
+!!$              write (*,44), vvel(xi-2:xi+2,yi+2, kb)             
+!!$              write (*,44), vvel(xi-2:xi+2,yi+1, kb)
+!!$              write (*,44), vvel(xi-2:xi+2,yi  , kb)
+!!$              write (*,44), vvel(xi-2:xi+2,yi-1, kb)
+!!$              write (*,44), vvel(xi-2:xi+2,yi-2, kb)
+!!$
+!!$44            FORMAT(5('       ',F5.3))
+!!$
+!!$              
+!!$              print *, '    '
+!!$              call print_pos
+!!$              call print_ds
+!!$              ! corner problems may be solved the following way 
+!!$              ! but should really not happen at all
+!!$              if(ds == dse .or. ds == dsw) then
+!!$                 if(y1.ne.y0) then
+!!$                    y1=y0 ; jb=ja
+!!$                 else
+!!$                    y1=dble(jb)-0.5d0
+!!$                 endif
+!!$              elseif(ds == dsn .or. ds == dss) then
+!!$                 print *, x0, x1
+!!$                 if(y1 == y0) then
+!!$                    print *, "Not Hello"
+!!$                    y1=y0 ; jb=ja 
+!!$                 else
+!!$                    print *, "Hello"
+!!$                    y1=dble(ib)-0.5d0
+!!$                 endif
+!!$              else
+!!$                 x1=dble(ib)-0.5d0
+!!$                 y1=dble(jb)-0.5d0
+!!$              endif
+!!$              call print_pos
+              nerror=nerror+1
+              cornerError = cornerError + 1
               errCode = -54
+              nrj(6,ntrac)=1
+              call writedata(40)
+
+              
+              !stop 34957
+
            endif
         case ('dsCrossError')
            ! === Can not find any path for unknown reasons ===
