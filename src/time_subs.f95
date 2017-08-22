@@ -1382,7 +1382,7 @@ end function errfun
 !USE mod_precdef
 !USE mod_param
 !IMPLICIT NONE
-!INTEGER, PARAMETER ::  NMAX=6  ! Denna ska kollas och testas med högre värden
+!INTEGER, PARAMETER ::  NMAX=6  ! Test with higher values
 !REAL (DP),  PARAMETER ::  H=0.4,A1=2./3.,A2=0.4,A3=2./7.
 !
 !REAL (DP)        :: dawson2,x,dd1,dd2,e1,e2,sum,x2,xp,xx,pisqin
