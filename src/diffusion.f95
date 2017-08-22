@@ -125,19 +125,21 @@ if(x1.ne.dble(idint(x1))) ib=idint(x1)+1 ! make sure the index corresponds to th
 	
 END SUBROUTINE diffuse
 
+
+
+SUBROUTINE displacement(xd, yd, zd, ib, jb, kb, dt)
 !===============================================================================
 ! Calculate a random displacement
 ! (sqrt(-4Ah*dt*log(1-q1))*cos(2PIq2),
 !  sqrt(-4Ah*dt*log(1-q1))*sin(2PIq2),
 !  sqrt(-4Av*dt*log(1-q3))*cos(2PIq4))
-! where Av and Ah are set in run.in, dt is the model time step and q1,q2,q3,q4 are random
-! numbers between 0 and 1.
+!         where Av and Ah are set in run.in, dt is the model time step and
+!         q1,q2,q3,q4 are random numbers between 0 and 1.
 !
 ! Arguments :
 ! xd, yd, zd : Variables in which the displacement will be stored
 ! dt: Model time step
 !===============================================================================
-SUBROUTINE displacement(xd, yd, zd, ib, jb, kb, dt) 
 	USE mod_precdef
 	USE mod_diffusion
 	USE mod_param
