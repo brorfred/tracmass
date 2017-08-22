@@ -10,7 +10,7 @@ USE mod_tempsalt
 IMPLICIT none
 
 INTEGER i,j,k,kk,mois(12)
-REAL*8 rlatt,rlatu!,radian,radius
+REAL*8 rlatt,rlatu
 REAL :: a
 
 #if defined occ
@@ -22,12 +22,7 @@ data b1,b2,b3,b4/10725.0d0,  10275.0d0, 36.0d0,     13.0d0/
 #endif
 
 data mois/31,28,31,30,31,30,31,31,30,31,30,31/
-!__________________________________________________________________________________________
-! Earth constants
-!radius = 6371229.d0 ! earth radius in metre
-!radian = pi/180.d0
-!deg=radius*radian ! ~ 111000 metre
-!tday=24.d0 * 3600.d0
+!_____________________________________________________________________________
 
 ! month lengths including leap years
 do i=1900,3000
