@@ -12,7 +12,7 @@ subroutine readfields
   
   IMPLICIT none
   
- INTEGER, PARAMETER ::  NY=160,NGAUS=35718
+ INTEGER, PARAMETER ::  NY=160, NGAUS=35718
 
  REAL*4, ALLOCATABLE, DIMENSION(:,:) :: snap,psurf
  REAL*4, ALLOCATABLE, DIMENSION(:,:,:) :: zeta
@@ -83,12 +83,12 @@ rho=0.
 radius = 6371229.d0 ! earth radius in metre
 pi = 2.d0 * dasin(1.d0)
 radian = pi/180.d0
-deg=radius*radian ! ~ 111000 metre
-grav=9.81 ! m/s2tyear=365.25d0 * 24.d0 * 3600.d0
+deg = radius * radian ! ~ 111000 metre
+grav = 9.81 ! m/s2tyear=365.25d0 * 24.d0 * 3600.d0
 dx = 360./float(IMT)
-dxdeg=dx*deg
-rconst=287.05  ! The gas constant J/(K kg)
-dsigma=1.d0/real(KM) !?????????????????????????? inte sgimakoordinater utan etha
+dxdeg = dx* deg
+rconst = 287.05  ! The gas constant J/(K kg)
+dsigma = 1.d0 / real(KM) !?????????????????????????? inte sgimakoordinater utan etha
 
 stlon1=0. 
 
