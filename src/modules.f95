@@ -20,7 +20,7 @@ MODULE mod_param
   REAL(DP), PARAMETER                       :: PI = 3.14159265358979323846d0
   REAL(DP), PARAMETER                       :: radius = 6371229.d0 
   REAL(DP), PARAMETER                       :: radian = pi/180.d0  
-  REAL(DP), PARAMETER                       :: deg=radius*radian   
+  REAL(DP), PARAMETER                       :: deg = radius * radian   
   REAL(DP), PARAMETER                       :: tday=24.d0 * 3600.d0
   INTEGER                                   :: idmax(12,1000:3000)
 ENDMODULE mod_param
@@ -554,12 +554,10 @@ ENDMODULE mod_tracer
 
 
 ! ===   ===   ===   ===   ===   ===   ===   ===   ===   ===   ===   ===
-#if defined diffusion || turb 
 !#ifdef diffusion
 MODULE mod_diffusion
   REAL                                       :: ah, av
 ENDMODULE mod_diffusion
-#endif
 ! ===   ===   ===   ===   ===   ===   ===   ===   ===   ===   ===   ===
 
 
