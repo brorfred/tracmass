@@ -14,6 +14,7 @@ MODULE mod_seed
 !!
 !!------------------------------------------------------------------------------
 
+   USE  mod_param, only   : ntracmax
    USE mod_time,  only    : ints, ntime, tseas, tt, ts, partQuant, intstart,nff
    USE mod_grid,  only    : imt, jmt, km, kmt, nsm, mask, dz, dzt
    USE mod_vel,   only    : uflux, vflux, wflux, ff
@@ -276,6 +277,16 @@ CONTAINS
 
                   ! Update trajectory numbers
                   ntractot = ntractot+1
+                  if(ntractot.gt.ntracmax) then
+                     print *,'==========================================='
+                     print *,'ERROR: to many trajectories,'
+                     print *, '-----------------------------------------'
+                     print *,'increase ntracmax since ntrac >',ntrac
+                     print *, '-----------------------------------------'
+                     print *,'The run is terminated'
+                     print *,'=========================================='
+                     stop
+                  end if
                   ntrac = ntractot
 
                   ! Only one particle for diagnistics purposes
