@@ -24,7 +24,6 @@ subroutine vertvel(ia,iam,ja,ka)
 #if defined twodim || explicit_w
   return
 #else
-   
   n1=min(nsm,nsp)
   n2=max(nsm,nsp)
   kloop: do k=1,ka
@@ -35,7 +34,7 @@ subroutine vertvel(ia,iam,ja,ka)
              (  uflux(ia,ja,k,n) - uflux(iam, ja,   k, n)   & 
               + vflux(ia,ja,k,n) - vflux(ia,  ja-1, k, n)   & 
 #if defined ifs
-              + (dzt(ia,ja,k,n2)-dzt(ia,ja,k,n1))*dxdy(ia,ja)/tseas )
+              - (dzt(ia,ja,k,n2)-dzt(ia,ja,k,n1))*dxdy(ia,ja)/tseas )
 #else
               - (dzt(ia,ja,k,n2)-dzt(ia,ja,k,n1))*dxdy(ia,ja)/tseas )
 #endif
