@@ -14,7 +14,7 @@ MODULE mod_param
   INTEGER, PARAMETER                        :: MR=501 ! or 1001
   INTEGER                                   :: ncoor,kriva,iter,ngcm
   REAL(DP), PARAMETER                       :: UNDEF=1.d20 
-  REAL(DP), PARAMETER                       :: EPS=1.d-7 ! the small epsilon
+  REAL(DP), PARAMETER                       :: EPS=1.d-10 !7 ! the small epsilon
 
   REAL(DP), PARAMETER                       :: grav = 9.81
   REAL(DP), PARAMETER                       :: PI = 3.14159265358979323846d0
@@ -163,6 +163,7 @@ CONTAINS
        print *,'ERROR: Negative box volume                                '
        print *,'----------------------------------------------------------'
        print *,'dxdy = ', dxdy(ib,jb)
+       print *,'dzt = ', intrpg,dzt(ib,jb,kb,nsp),intrpr,dzt(ib,jb,kb,nsm)
        print *,'ib  = ', ib, ' jb  = ', jb, ' kb  = ', kb 
        print *,'----------------------------------------------------------'
        print *,'The run is terminated'
