@@ -239,10 +239,12 @@ contains
           kb=ka+1
        endif
        z1=dble(ka)
+#ifndef airseaflux
        if(kb==KM+1) then    ! prevent "evaporation" and put particle from 
           kb=KM             ! the surface to the middle of the surface layer
           z1=dble(KM)-0.5d0 !
        endif
+#endif
 #if defined timeanalyt
        call pos_time(1,ia,ja,ka,x0,x1)
        call pos_time(2,ia,ja,ka,y0,y1)

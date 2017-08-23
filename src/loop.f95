@@ -13,7 +13,7 @@ SUBROUTINE loop
 !!          See tracmass manual for schematic of the structure.
 !!
 !!
-!!---------------------------------------------------------------------------          
+!!---------------------------------------------------------------------------
   USE mod_param,    only: ntracmax, undef, tday
   USE mod_loopvars, only: dse, dsw, dsmin, ds, dsu, dsd, dsn, dss, &
                           niter, lbas, scrivi, subvol
@@ -193,7 +193,6 @@ SUBROUTINE loop
      call fancyTimer('advection','start')
      
      ntracLoop: do ntrac=1,ntractot
-        !print *,ntrac, ntractot
         ! === Test if the trajectory is dead   ===
         if(nrj(6,ntrac) == 1) cycle ntracLoop
         
@@ -212,7 +211,6 @@ SUBROUTINE loop
         niter  =  nrj(4,ntrac)
         ts     =  dble(nrj(5,ntrac))
         tss    =  0.d0
-
         
 #ifdef rerun
         lbas=nrj(8,ntrac)
@@ -331,7 +329,6 @@ SUBROUTINE loop
            ! === calculate the new positions of the particle ===    
            call pos(ia,iam,ja,ka,ib,jb,kb,x0,y0,z0,x1,y1,z1)
            !call errorCheck('longjump', errCode)
-
            
            if (nperio == 6) then
               ! === north fold cyclic for the ORCA grids ===
@@ -409,36 +406,33 @@ SUBROUTINE loop
            
            if (ja>jmt) ja = jmt - (ja - jmt)
            if (jb>jmt) jb = jmt - (jb - jmt)
-           
+
            call errorCheck('boundError', errCode)
            if (errCode.ne.0) cycle ntracLoop
            call errorCheck('landError', errCode)
            if (errCode.ne.0) cycle ntracLoop
            call errorCheck('bottomError', errCode)
-           !    if (errCode.ne.0) cycle ntracLoop
+       !    if (errCode.ne.0) cycle ntracLoop
            call errorCheck('airborneError', errCode)
            if (errCode.ne.0) cycle ntracLoop
-
+           
            call errorCheck('corrdepthError', errCode)
 !           if (errCode.ne.0) cycle ntracLoop
            call errorCheck('cornerError', errCode)
            if (errCode.ne.0) cycle ntracLoop
-
-
-
            
            ! === diffusion, which adds a random position ===
            ! === position to the new trajectory          ===
 #if defined diffusion     
-           !call diffuse(x1,y1,z1,ib,jb,kb,dt)
-           !call random_seed()
-           call random_number(rnum)
-           x1 = x1 + (rnum - 0.5) * 0.01
-           call random_number(rnum)
-           y1 = y1 + (rnum - 0.5) * 0.01
-
+           call diffuse(x1,y1,z1,ib,jb,kb,dt)
 #endif
            ! === end trajectory if outside chosen domain === 
+           
+           if( z1.ge.dble(KM) ) then ! precipated for atm or evaporated if ocean
+            nexit(k)=nexit(k)+1
+            exit niterLoop                                
+           endif
+           
            nendloop: do k=1,nend
               if(ienw(k) <= x1 .and. x1 <= iene(k) .and. &
                  jens(k) <= y1 .and. y1 <= jenn(k) ) then
@@ -544,7 +538,7 @@ return
        thinline  = "-----------------------------------------------" // &
                    "-----------------------------------------------"
        errCode = 0
-
+       
        select case (trim(teststr))
        case ('infLoopError')
           if(niter-nrj(4,ntrac) > 300) then ! break infinite loops
@@ -729,6 +723,7 @@ return
               errCode = -49
            end if
         case ('airborneError')
+#ifndef airseaflux
            ! if trajectory above sea level,
            ! then put back in the middle of shallowest layer (evaporation)
            if( z1 > dble(km) ) then
@@ -748,6 +743,7 @@ return
               kb=KM
               errCode = -50
            endif
+#endif
         case ('corrdepthError')
            ! sets the right level for the corresponding trajectory depth
            if(z1.ne.dble(idint(z1))) then
@@ -937,7 +933,7 @@ return
     print '(A,I4,A,I4)',    '      ka : ', ka, '         kb : ', kb
     print '(A,F7.2,A,F7.2)','      z1 : ', z1, '      z0 : ', z0
   end subroutine print_pos
-
+  
   subroutine fancyTimer(timerText ,testStr)
     IMPLICIT NONE
 
@@ -945,15 +941,15 @@ return
     REAL ,SAVE                                 :: fullstamp1 ,fullstamp2
     REAL ,SAVE ,DIMENSION(2)                   :: timestamp1 ,timestamp2
     REAL                                       :: timeDiff
-!!$    select case (trim(testStr))
-!!$    case ('start')
-!!$       WRITE (6, FMT="(A)", ADVANCE="NO") ,' - Begin '//trim(timerText)
-!!$       call etime(timestamp1,fullstamp1)
-!!$    case ('stop')
-!!$       call etime(timestamp2,fullstamp2)
-!!$       timeDiff=fullstamp2-fullstamp1
-!!$       write (6 , FMT="(A,F6.1,A)") ', done in ' ,timeDiff ,' sec'
-!!$    end select
+!    select case (trim(testStr))
+!    case ('start')
+!       WRITE (6, FMT="(A)", ADVANCE="NO") ' - Begin '//trim(timerText)
+!       call etime(timestamp1,fullstamp1)
+!    case ('stop')
+!       call etime(timestamp2,fullstamp2)
+!       timeDiff=fullstamp2-fullstamp1
+!       write (6 , FMT="(A,F6.1,A)") ', done in ' ,timeDiff ,' sec'
+!    end select
   end subroutine fancyTimer
 end subroutine loop
 
