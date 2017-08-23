@@ -88,7 +88,7 @@ IMPLICIT NONE
 INTEGER :: iim,loop,iil,ii,ijk,ia,ja,ka
 REAL (DP)  :: uu,um,vv,vm,ss,alfa
 REAL (DP)  :: f0,f1,dzs,dzu1,dzu2,rijk,s0!,ss0
-REAL (DP)   :: r0,sp,sn
+REAL (DP)  :: r0,sp,sn
 
 !_______________________________________________________________________________
 sp=UNDEF ; sn=UNDEF
@@ -179,17 +179,19 @@ elseif(ijk==3) then
  endif
 #endif
 
-#ifdef zgrid3D 
+!#ifdef zgrid3D 
 
   dzu1=dzt(ia,ja,ka,nsm) ! layer thickness at time step n-1
   dzu2=dzt(ia,ja,ka,nsp) ! layer thickness at time step n
 !  dzs= intrpg*dzu1 + intrpr*dzu2   ! layer thickness at time interpolated for "present" ! (wrong?? 
   dzs= intrpr*dzu1 + intrpg*dzu2   ! layer thickness at time interpolated for "present" 
-  if(abs(dzu1)<eps) stop 8705
-  if(abs(dzu2)<eps) stop 8706
+!  if(abs(dzu1)<eps) stop 8705
+  if(dzu1<eps) stop 8705
+!  if(abs(dzu2)<eps) stop 8706
+  if(dzu2<eps) stop 8706
   f0=dzs/dzu1
   f1=dzs/dzu2
-! print *,tt,ts, intrpg, intrpr,dzu1,dzu2,dzs,f0,f1
+  f0=1. ; f1=1.
   uu=uu*f0
   um=um*f0
   vv=vv*f1
@@ -198,48 +200,46 @@ elseif(ijk==3) then
   if(abs(f1)<=eps) stop 8708
   f0=1.0_dp/f0
   f1=1.0_dp/f1
-#elif defined zgrid3D && defined freesurface
- if (ka==km) then
-  dzs= dz(km)+intrpg*hs(ia,ja,nsm)+intrpr*hs(ia,ja,nsp)
-  dzu1=dz(km)+hs(ia,ja,nsm)
-  dzu2=dz(km)+hs(ia,ja,nsp)
-  if(abs(dzu1)<eps) stop 8705
-  if(abs(dzu2)<eps) stop 8706
-  f0=dzs/dzu1
-  f1=dzs/dzu2
-  uu=uu*f0
-  um=um*f0
-  vv=vv*f1
-  vm=vm*f1
-  if(abs(f0)<eps) stop 8707
-  if(abs(f1)<eps) stop 8708
-  f0=1.0_dp/f0
-  f1=1.0_dp/f1
- endif 
-#endif /*zgrid3D*/
+!#elif defined zgrid3D && defined freesurface
+! if (ka==km) then
+!  dzs= dz(km)+intrpg*hs(ia,ja,nsm)+intrpr*hs(ia,ja,nsp)
+!  dzu1=dz(km)+hs(ia,ja,nsm)
+!  dzu2=dz(km)+hs(ia,ja,nsp)
+!  if(abs(dzu1)<eps) stop 8705
+!  if(abs(dzu2)<eps) stop 8706
+!  f0=dzs/dzu1
+!  f1=dzs/dzu2
+!  uu=uu*f0
+!  um=um*f0
+!  vv=vv*f1
+!  vm=vm*f1
+!  if(abs(f0)<eps) stop 8707
+!  if(abs(f1)<eps) stop 8708
+!  f0=1.0_dp/f0
+!  f1=1.0_dp/f1
+! endif 
+!#endif /*zgrid3D*/
 
 
 endif
 
 
 alfa = -(vv-vm-uu+um)
-!print *,'alfa=',alfa,vv,vm,uu,um
 ! ----- a > 0
-!     if (alfa>EPS) then
-     if (alfa>0.0_dp) then
+     if (alfa>EPS) then
+!     if (alfa>0.0_dp) then
       call apos (ii,iim,r0,rijk,s0,ss,ss0,uu,um,vv,vm,f0,f1,loop,dsmin)
 ! ----- a < 0      
-!     elseif (alfa<-EPS) then
-     elseif (alfa<0.0_dp) then
+     elseif (alfa<-EPS) then
+!     elseif (alfa<0.0_dp) then
       call amin (ii,iim,r0,rijk,s0,ss,ss0,uu,um,vv,vm,f0,f1,loop,dsmin)
  !     print *,'amin',ii,iim,r0,rijk,s0,ss,ss0,uu,um,vv,vm,f0,f1,loop,dsmin
 ! ----- a = 0 
       else
-      if (alfa/=0.0_dp) print *,'anil eps=',alfa
+ !     if (alfa/=0.0_dp) print *,'anil eps0=',alfa
       call anil (ii,iim,r0,rijk,s0,ss,ss0,uu,um,vv,vm,f0,f1,loop,dsmin)
      endif
 ! translate direction and positions for old to new tracmass
-!print *,'cross_time ',ijk,'u+',uu,vv,' u-',um,vm,'ss',ss,ss0,' alfa',alfa
       if (rijk==dble(ii)) then
        sp=ss-s0
        sn=UNDEF
@@ -253,9 +253,6 @@ alfa = -(vv-vm-uu+um)
       if(sp==0.0_dp) sp=UNDEF
       if(sn==0.0_dp) sn=UNDEF
       
-!    if(sp/=undef .or. sn/=undef) print *,'cross_time',ss,s0,sp,sn
-!      if(ijk==3) stop 49678
-!stop 4856
 return
 end subroutine cross_time
 !_______________________________________________________________________
@@ -393,16 +390,17 @@ elseif(ijk==3) then
  endif
 #endif
 
-#ifdef zgrid3D 
+!#ifdef zgrid3D 
 
   dzu1=dzt(ia,ja,ka,nsm) ! layer thickness at time step n-1
   dzu2=dzt(ia,ja,ka,nsp) ! layer thickness at time step n
 !  dzs= intrpg*dzu1 + intrpr*dzu2   ! layer thickness at time interpolated for "present" ! (wrong?? 
   dzs= intrpr*dzu1 + intrpg*dzu2   ! layer thickness at time interpolated for "present" 
-  if(abs(dzu1)<eps) stop 4966
-  if(abs(dzu2)<eps) stop 4967
+  if(dzu1<eps) stop 4966
+  if(dzu2<eps) stop 4967
   f0=dzs/dzu1
   f1=dzs/dzu2
+  f0=1. ; f1=1.
   uu=uu*f0
   um=um*f0
   vv=vv*f1
@@ -411,25 +409,26 @@ elseif(ijk==3) then
   if(abs(f1)<=eps) stop 4969
   f0=1.0_dp/f0
   f1=1.0_dp/f1
-#elif defined zgrid3D && defined freesurface
- if (ka==km) then
-  dzs= dz(km)+intrpg*hs(ia,ja,nsm)+intrpr*hs(ia,ja,nsp)
-  dzu1=dz(km)+hs(ia,ja,nsm)
-  dzu2=dz(km)+hs(ia,ja,nsp)
-  if(abs(dzu1)<eps) stop 4966
-  if(abs(dzu2)<eps) stop 4967
-  f0=dzs/dzu1
-  f1=dzs/dzu2
-  uu=uu*f0
-  um=um*f0
-  vv=vv*f1
-  vm=vm*f1
-  if(abs(f0)<eps) stop 4968
-  if(abs(f1)<eps) stop 4969
-  f0=1.0_dp/f0
-  f1=1.0_dp/f1
- endif 
-#endif /*zgrid3D*/
+!#elif defined zgrid3D && defined freesurface
+!stop 4854
+! if (ka==km) then
+!  dzs= dz(km)+intrpg*hs(ia,ja,nsm)+intrpr*hs(ia,ja,nsp)
+!  dzu1=dz(km)+hs(ia,ja,nsm)
+!  dzu2=dz(km)+hs(ia,ja,nsp)
+!  if(abs(dzu1)<eps) stop 4966
+!  if(abs(dzu2)<eps) stop 4967
+!  f0=dzs/dzu1
+!  f1=dzs/dzu2
+!  uu=uu*f0
+!  um=um*f0
+!  vv=vv*f1
+!  vm=vm*f1
+!  if(abs(f0)<eps) stop 4968
+!  if(abs(f1)<eps) stop 4969
+!  f0=1.0_dp/f0
+!  f1=1.0_dp/f1
+! endif 
+!#endif /*zgrid3D*/
 
 
 endif
@@ -466,7 +465,7 @@ if (alfa>0.0_dp) then
  xi =(beta+alfa*(ss-ss0))/dsqrt(2.d0*alfa)
  daw0 = dawson2(xi0) 
  r1 = dawson1 (const,daw0,r0+ga,xi0,xi) -ga
-!print *,'alfa>0',f0,r1,const,daw0,r0+ga,xi0,xi,ga,dawson1 (const,daw0,r0+ga,xi0,xi)
+!print *,'alfa>0',alfa,f0,f1,r1,const!,daw0,r0+ga,xi0,xi,ga,dawson1 (const,daw0,r0+ga,xi0,xi)
 elseif (alfa<0.0_dp) then
  const=const*dsqrt(pi/(-2._dp*alfa))
  xi0=(beta+alfa*(s0-ss0))/dsqrt(-2._dp*alfa)
@@ -497,7 +496,7 @@ elseif (alfa==0.0_dp) then
  endif 
 endif
 
-!print *,'alfa,beta',alfa,beta,r0-r1
+!print *,'alfa,beta',alfa,beta
 !print *,'subroutine pos_time',r0,r1
 if (r1-dble(ii) >0.0_dp .and. r1-dble(ii) <xxlim) r1=dble(ii )-xxlim
 if (dble(iim)-r1>0.0_dp .and. dble(iim)-r1<xxlim) r1=dble(iim)+xxlim
@@ -505,7 +504,7 @@ if (dble(iim)-r1>0.0_dp .and. dble(iim)-r1<xxlim) r1=dble(iim)+xxlim
 ! print *,'ts=',ts,tt,dsmin,ds,dsmin-ds
 if(abs(r0-r1)>1.0_dp) then
  print *,'warning time analytical solution outside the box',ntrac,ijk,r0,r1,r0-r1,ii,iim
-! stop 48956
+ stop 48956
  r1=r0
 endif
 
@@ -542,9 +541,12 @@ REAL (DP)  :: r0,dsmin
 !print *,'ii',ii
 
 alfa = -(vv-vm-uu+um)/dsmin                 ! same as alpha in paper
-if(alfa<EPS) stop 8771
+!if(alfa<EPS) stop 8771
+if(abs(alfa)<EPS) print *,'abs(alfa)<EPS)',alfa,(beta+alfa*(s0-ss0))/dsqrt(2._dp*alfa),s0-ss0
 beta = um-uu                                ! not same as beta in paper
 xi0=(beta+alfa*(s0-ss0))/dsqrt(2._dp*alfa)  ! same as xi0 in paper where s=s0-ss0
+if(abs(alfa)<EPS) print *,'xi0',xi0,beta
+if(abs(alfa)<EPS) print *,'vv-vm-uu+um',vv-vm-uu+um
 
 ! 1) ii or iim ---> land point 
 if (uu==0.0_dp .and. vv==0.0_dp) then
@@ -580,6 +582,7 @@ if (f0==0.0_dp) then
 else
  ga = -dble(iim) + (f1*vm-f0*um)/(vv-uu-vm+um)
  const = (f0*um*(vv-vm)+f1*vm*(um-uu))/(vv-uu-vm+um)
+if(abs(alfa)<EPS) print *,'const0', const,ga,vv-uu-vm+um,vv,uu,vm,um
 ! ssii = (uu+um*(f0-1.))/(uu-vv+um*(f0-1.)+vm*(1.-f1))
  ssii = uu-vv+um*(f0-1.0_dp)+vm*(1.0_dp-f1)
  if(abs(ssii)>EPS) then
@@ -589,7 +592,7 @@ else
  endif
 ! ssiim= f0*um/(f0*um-f1*vm)
  ssiim= (f0*um-f1*vm)
- if(abs(ssiim)>EPS) then
+if(abs(ssiim)>EPS) then
   ssiim= f0*um/ssiim
  else
   ssiim= EPS ! This to correct when by accident f0*um = f1*vm
@@ -598,7 +601,6 @@ else
 !  stop 8779
  endif
 endif
-
 
 const = 2.*const/dsqrt(2.*alfa)
 daw0 = dawson2(xi0)    
@@ -725,7 +727,8 @@ xibf=xf
 !       if (xerr==UNDEF) loop=1000
       goto 200
      endif
-     if(abs(xf1)<=eps) stop 4992
+     !if(abs(xf1)<=eps) stop 4992
+     if(abs(xf1)<=eps) print *,'abs(xf1)=',abs(xf1)
      xin = xi - xf/xf1
      if ( dabs(xf)>100.0_dp .or.(xf*xibf>0.0_dp .and.(xf1*xibf<0.0_dp .or.xin<xia)) ) then
       xib = xi
@@ -1382,7 +1385,7 @@ end function errfun
 !USE mod_precdef
 !USE mod_param
 !IMPLICIT NONE
-!INTEGER, PARAMETER ::  NMAX=6  ! Test with higher values
+!INTEGER, PARAMETER ::  NMAX=6  ! Denna ska kollas och testas med högre värden
 !REAL (DP),  PARAMETER ::  H=0.4,A1=2./3.,A2=0.4,A3=2./7.
 !
 !REAL (DP)        :: dawson2,x,dd1,dd2,e1,e2,sum,x2,xp,xx,pisqin
