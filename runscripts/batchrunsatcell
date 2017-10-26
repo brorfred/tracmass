@@ -1,0 +1,10 @@
+./runtrm satcell0006 &
+./runtrm satcell0012 &
+./runtrm satcell0060 &
+./runtrm satcell0120 &
+./runtrm satcell0600 &
+./runtrm satcell1200 &
+
+
+
+

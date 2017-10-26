@@ -1,0 +1,10 @@
+((./runtrm full  1); push.py "rank 01") &
+((./runtrm full  2); push.py "rank 02") &
+((./runtrm full  3); push.py "rank 03") &
+((./runtrm full  4); push.py "rank 04") &
+((./runtrm full  5); push.py "rank 05") &
+((./runtrm full  6); push.py "rank 06") &
+((./runtrm full  7); push.py "rank 07") &
+((./runtrm full  8); push.py "rank 08") &
+((./runtrm full  9); push.py "rank 09") &
+((./runtrm full 10); push.py "rank 10") &

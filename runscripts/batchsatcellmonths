@@ -1,0 +1,39 @@
+./runtrm satcell 0 730486.0 &
+./runtrm satcell 0 730851.0 &
+./runtrm satcell 0 731216.0 &
+./runtrm satcell 0 731581.0 &
+./runtrm satcell 0 731947.0 &
+./runtrm satcell 0 732312.0 &
+./runtrm satcell 0 732677.0 &
+./runtrm satcell 0 733042.0 &
+./runtrm satcell 0 733408.0 &
+./runtrm satcell 0 730576.0 &
+sleep 30m
+./runtrm satcell 0 730941.0 &
+./runtrm satcell 0 731306.0 &
+./runtrm satcell 0 731672.0 &
+./runtrm satcell 0 732037.0 &
+./runtrm satcell 0 732402.0 &
+./runtrm satcell 0 732767.0 &
+./runtrm satcell 0 733133.0 &
+./runtrm satcell 0 733498.0 &
+./runtrm satcell 0 730667.0 &
+./runtrm satcell 0 731032.0 &
+sleep 30m
+./runtrm satcell 0 731397.0 &
+./runtrm satcell 0 731763.0 &
+./runtrm satcell 0 732128.0 &
+./runtrm satcell 0 732493.0 &
+./runtrm satcell 0 732858.0 &
+./runtrm satcell 0 733224.0 &
+./runtrm satcell 0 733589.0 &
+./runtrm satcell 0 730759.0 &
+./runtrm satcell 0 731124.0 &
+./runtrm satcell 0 731489.0 &
+sleep 30m
+./runtrm satcell 0 731855.0 &
+./runtrm satcell 0 732220.0 &
+./runtrm satcell 0 732585.0 &
+./runtrm satcell 0 732950.0 &
+./runtrm satcell 0 733316.0 &
+./runtrm satcell 0 733681.0 &
