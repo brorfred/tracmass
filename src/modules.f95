@@ -45,7 +45,7 @@ MODULE mod_traj
   ! Variables connected to particle positions.
   INTEGER, PARAMETER                        :: NNRJ=8, NTRJ=7
   INTEGER                                   :: nend
-  INTEGER                                   :: ntrac, ntractot=0
+  INTEGER                                   :: ntrac=1, ntractot=0
   ! === Particle arrays ===
   REAL(DP), ALLOCATABLE,  DIMENSION(:,:)    :: trj
   INTEGER, ALLOCATABLE, DIMENSION(:,:)      :: nrj 
@@ -246,7 +246,7 @@ CONTAINS
     currJDtot = (ints+ttpart)*(dble(ngcm)/24.)
     call  gdate (baseJD+currJDtot-1+jdoffset + leapoffset,  &
                  currYear , currMon ,currDay)
-    currJDyr = baseJD + currJDtot - jdate(currYear ,1 ,1) + jdoffset
+    currJDyr = baseJD + currJDtot - jdate(currYear, 1, 1) + jdoffset
     
     if ((mod(currYear, 4) == 0)  .and. (currJDyr>56) .and.     &
          (currJDyr<(56 - leapoffset + ngcm/24.)) .and. noleap) then
@@ -262,7 +262,7 @@ CONTAINS
     CurrMin  = int(currFrac,8)
     currSec  = int((currFrac - dble(currMin)) * 60,8)
 
-    if (ints > (maxvelints-1)) then
+    if ((ints > (maxvelints-1)) .and. (nff==1)) then
        if (minvelints == 0) then
           loopints = ints - intmax * int(real(ints-intstart)/intmax)
        else
@@ -285,7 +285,7 @@ CONTAINS
   subroutine gdate (rjd, year,month,day)
     !Computes the gregorian calendar date given a julian date (jd).
     !Source: http://aa.usno.navy.mil/faq/docs/JD_Formula.php            
-    REAL(DP)                                   :: rjd
+    REAL(DP)                                 :: rjd
     INTEGER                                  :: jd
     INTEGER                                  :: year ,month ,day
     INTEGER                                  :: i ,j ,k ,l ,n
@@ -520,16 +520,16 @@ ENDMODULE mod_name
 MODULE mod_streamfunctions
   USE mod_precdef
 #ifdef streamxy
-  REAL*4, ALLOCATABLE, DIMENSION(:,:,:)        :: stxyy, stxyx
+  REAL*4, ALLOCATABLE, DIMENSION(:,:,:)      :: stxyy, stxyx
 #endif
 #ifdef streamv
-  REAL*4, ALLOCATABLE, DIMENSION(:,:,:)        :: stxz, styz
+  REAL*4, ALLOCATABLE, DIMENSION(:,:,:)      :: stxz, styz
 #endif
 #ifdef streamr
-  REAL*4, ALLOCATABLE, DIMENSION(:,:,:,:)      :: stxr,styr
+  REAL*4, ALLOCATABLE, DIMENSION(:,:,:,:)    :: stxr,styr
 #endif
 #ifdef stream_thermohaline
-  REAL*4, ALLOCATABLE, DIMENSION(:,:,:,:)      :: psi_ts
+  REAL*4, ALLOCATABLE, DIMENSION(:,:,:,:)    :: psi_ts
 #endif
 #ifdef tracer_convergence
   REAL, ALLOCATABLE, DIMENSION(:,:,:,:)      :: converg
@@ -537,9 +537,9 @@ MODULE mod_streamfunctions
   INTEGER                                    :: intpsi=120 
   ! to be read by the xxx.in files in future
 #ifdef streamts
-  INTEGER, PARAMETER                        :: LOV=3
+  INTEGER, PARAMETER                         :: LOV=3
 #else
-  INTEGER, PARAMETER                        :: LOV=1
+  INTEGER, PARAMETER                         :: LOV=1
 #endif
 ENDMODULE mod_streamfunctions
 ! ===   ===   ===   ===   ===   ===   ===   ===   ===   ===   ===   ===

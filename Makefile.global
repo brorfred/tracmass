@@ -29,8 +29,8 @@ ifeq ($(NETCDFLIBS),"automatic")
 	INC_DIR = -I$(shell nc-config --includedir)
 endif
 ifeq ($(NETCDFLIBS),"automatic-44")
-	INC_DIR = $(shell nf-config --cflags)
-	LIB_DIR = $(shell nf-config --flibs)
+	INC_DIR   = $(shell nf-config --cflags) 
+	LIB_DIR   = $(shell nf-config --flibs)
 endif 
 ifeq ($(NETCDFLIBS),"macports")
 	LIB_DIR          = -L/opt/local/lib
@@ -84,10 +84,10 @@ objects := $(addprefix $(OBJDIR)/,modules.o savepsi.o loop_pos.o writetrajs.o \
 		    setupgrid.o readfield.o diffusion.o)
 
 runfile : $(objects)
-	$(FF) $(MYI_FLAGS) -o $(RUNFILE) $(objects) $(LNK_FLAGS) $(MYL_FLAGS)
+	$(FF) $(MYI_FLAGS) -o $(RUNFILE) $(objects) $(LNK_FLAGS) $(MYL_FLAGS) $(LIB_DIR)
 
 $(OBJDIR)/%.o : %.f95
-	$(FF) $(FF_FLAGS) $(ORM_FLAGS) $(PROJECT_FLAG) $(CASE_FLAG) $(ARG_FLAGS)  $< -o $@
+	$(FF) $(ORM_FLAGS) $(PROJECT_FLAG) $(CASE_FLAG) $(ARG_FLAGS)  $(FF_FLAGS) $< -o $@
 
 
 
