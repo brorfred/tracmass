@@ -138,11 +138,8 @@ CONTAINS
   end subroutine close_outfiles
 
   subroutine writedata(sel)
-    USE mod_time
-    USE mod_pos
-    USE mod_traj
-    USE mod_loopvars
-    USE mod_name
+    USE mod_pos, only: kriva, niter, scrivi, ntrac, subvol
+    USE mod_traj, only: x1, y1, z1, trj, nrj
 
     IMPLICIT NONE
 
@@ -189,14 +186,12 @@ CONTAINS
        !       vort = (vvel(xf+1,yf,zf)-vvel(xf-1,yf,zf))/4000 - &
        !            (uvel(xf,yf+1,zf)-uvel(xf,yf-1,zf))/4000   
     !end if
-    
+
 subvol =  trj(5,ntrac)
 t0     =  trj(7,ntrac)
 #if defined tempsalt
     call interp2(ib,jb,kb,temp,salt,dens)
 #endif
-
-!print *,x1,y1,z1
     
 #if defined textwrite 
     select case (sel)

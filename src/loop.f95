@@ -151,7 +151,6 @@ SUBROUTINE loop
   call updateclock  
   call readfields   ! initial dataset
   call active_init
-  ntrac = 0
   call fancyTimer('initialize dataset','stop')
 
   !==========================================================
