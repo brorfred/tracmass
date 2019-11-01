@@ -66,7 +66,7 @@
   !                 5 = write at chosen intervals
   !                 6 = write each spatial grid-crossing 
              kriva =      6,
-      outdatadir =   '/Users/doos/data/tracmass/data_out/',
+      outdatadir =   '',
      outdatafile =     'test',
 !     outdatafile =     'analyt_k1',
     ! outdatafile =     'dt1_k1',
