@@ -35,7 +35,7 @@
 #  fl20  = -Dsediment       # Sediment code developed for RCO
 #------------------------------------------------------------------------
 #  fl21  = -Dturb           # Adds subgrid turbulent velocities 
-#  fl22  = -Ddiffusion      # Adds a diffusion on trajectory
+  fl22  = -Ddiffusion      # Adds a diffusion on trajectory
 #========================================================================
 
 ORM_FLAGS= -D$(PROJECT) $(fl01)$(fl02)$(fl03)$(fl04)$(fl05)$(fl06)\

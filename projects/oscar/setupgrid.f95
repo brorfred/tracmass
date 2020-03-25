@@ -90,13 +90,13 @@ SUBROUTINE setupgrid
   dzt = 10
   uvel(:,:,1) =  get2DfieldNC(trim(gridfile), 'u')
   where (uvel(1:imt,:,1) .ne. uvel(1:imt,:,1))
-     kmt = 0
+     mask = 0
   end where
   uvel(:,:,1) =  get2DfieldNC(trim(gridfile), 'v')
   where (uvel(1:imt,:,1) .ne. uvel(1:imt,:,1))
-     kmt = 0
+     mask = 0
   end where
 
-  mask = kmt
+  !kmt = 1
 
 end SUBROUTINE setupgrid

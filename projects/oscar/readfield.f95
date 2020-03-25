@@ -50,13 +50,16 @@ SUBROUTINE readfields
   call updateClock
 
   if (ncTpos >= fieldsPerFile) ncTpos=0
- 
+  !ncTpos = 28
+  
   fileName = 'oscar_vel0000.nc'
   write(fileName(10:13),'(i4)') int(loopYear)
+  !write(fileName(10:13),'(i4)') 2014
+
   ncFile   = trim(inDataDir)//fileName
   inquire(file=ncFile,exist=around)
   if(.not.around) then 
-     print *, trim(ncFile) // ' doesnt exists' 
+     print *, trim(ncFile) // ' does not exists' 
      stop
   end if
   nread = mod(ints/5,18) + 1
@@ -69,7 +72,7 @@ SUBROUTINE readfields
 
   uvel(:,:,1) =  get2DfieldNC(trim(ncFile), 'u') !,481,1)
   vvel(:,:,1) =  get2DfieldNC(trim(ncFile), 'v') !,481,1)
-  !vvel = -vvel 
+  vvel = -vvel 
 
   where (uvel .ne. uvel)
      uvel = 0
@@ -78,7 +81,7 @@ SUBROUTINE readfields
      vvel = 0
   end where
 
-  uflux(:,:,1,2)   = uvel(1:imt,:,1) * dyu(1:imt,:) * dz(1) 
+  uflux(:,:,1,2)      = uvel(1:imt,:,1) * dyu(1:imt,:) * dz(1)
   vflux(:,1:jmt,1,2)  = vvel(1:imt,1:jmt,1) * dxv(1:imt,1:jmt) * dz(1)
 
   uflux(1:imt-1,:,1,2) = (uflux(1:imt-1,:,1,2) + uflux(2:imt,:,1,2)) / 2

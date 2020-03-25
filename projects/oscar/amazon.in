@@ -25,13 +25,13 @@
        starthour =      0,
         startday =      1,
         startmon =      1,
-       startyear =   2013,
+       startyear =   2012,
          startjd =     -1,
           intmin =  58800,
 /
 &INIT_RUN_TIME
-         intspin =     1,
-          intrun =     72,
+         intspin =     15,
+          intrun =     75,
    seedintsdelta =      1,
 /
 &INIT_WRITE_TRAJS
