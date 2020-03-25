@@ -43,13 +43,13 @@ SUBROUTINE loop
   REAL                                       :: temp, salt, dens
   REAL                                       :: temp2, salt2, dens2
   ! === Error Evaluation ===
-  INTEGER                                    :: errCode
+  INTEGER                                    :: errCode=0
   INTEGER                                    :: landError=0, boundError=0
   INTEGER                                    :: cornerError=0
   REAL                                       :: zz
   
   call print_start_loop
-  
+
   dstep = 1.d0 / dble(iter)
   dtmin = dstep * tseas
     
@@ -156,7 +156,7 @@ SUBROUTINE loop
   !==========================================================
   !=== Start main time loop                               ===
   !==========================================================
-  intsTimeLoop: do ints=intstart+nff, intstart+intrun, nff
+  intsTimeLoop: do ints=intstart, intend, nff
      call fancyTimer('reading next datafield','start')
      tt = ints*tseas
      if (degrade_counter < 1) call readfields
@@ -172,7 +172,7 @@ SUBROUTINE loop
       call writetracer
      endif
 
-     intspinCond: if(ints*nff <= (intstart+intspin)*nff) then
+     intspinCond: if(ints*nff < (intstart+intspin)*nff) then
         call fancyTimer('seeding','start')
         call seed (tt,ts)
         call fancyTimer('seeding','stop')
@@ -192,6 +192,8 @@ SUBROUTINE loop
      call fancyTimer('advection','start')
      
      ntracLoop: do ntrac=1,ntractot
+        if (errCode.ne.0) print *,errCode
+
         ! === Test if the trajectory is dead   ===
         if(nrj(6,ntrac) == 1) cycle ntracLoop
         
@@ -278,7 +280,6 @@ SUBROUTINE loop
            call errorCheck('coordBoxError' ,errCode)
            call errorCheck('infLoopError'  ,errCode)
            if (errCode.ne.0) cycle ntracLoop
-           
            ! === write trajectory ===                       
 #ifdef tracer
            if(ts == dble(int(ts, 8))) then 
@@ -325,10 +326,10 @@ SUBROUTINE loop
            if (errCode.ne.0) cycle ntracLoop
            call calc_time
 
-           ! === calculate the new positions of the particle ===    
+           ! === calculate the new positions of the particle ===
            call pos(ia,iam,ja,ka,ib,jb,kb,x0,y0,z0,x1,y1,z1)
            !call errorCheck('longjump', errCode)
-           
+
            if (nperio == 6) then
               ! === north fold cyclic for the ORCA grids ===
               if( y1 == dble(JMT-1) ) then ! North fold for ntrac
@@ -427,8 +428,8 @@ SUBROUTINE loop
 #endif
            ! === end trajectory if outside chosen domain === 
            
-           if( z1.ge.dble(KM) ) then ! precipated for atm or evaporated if ocean
-            nexit(k)=nexit(k)+1
+           if( z1 > dble(KM) ) then ! precipated for atm or evaporated if ocean
+              nexit(k)=nexit(k)+1
             exit niterLoop                                
            endif
            
@@ -623,28 +624,35 @@ return
              ja<1 .or. ja>jmt .or. jb<1 .or. jb>jmt .or.    &
              y0<1 .or. y0>jmt .or. y1<1 .or. y1>jmt         &
              ) then
-             if (verbose == 1) then
-                print *, thickline !========================================
-                print *,'Warning: Trajectory leaving model area'
-                print *, thinline !-----------------------------------------
-                call print_pos
-                call print_ds
-                print *,'tt=',tt,ts
-                print *,'ntrac=',ntrac
-                print *, thinline !-----------------------------------------
-                print *,'The trajectory is killed'
-                print *, thickline !========================================
+             if (nperio /= 0) then
+                if (verbose == 1 .and. nperio /= 0) then
+                   print *, thickline !========================================
+                   print *,'Warning: Trajectory leaving model area'
+                   print *, thinline !-----------------------------------------
+                   call print_pos
+                   call print_ds
+                   print *,'tt=',tt,ts
+                   print *,'ntrac=',ntrac
+                   print *, thinline !-----------------------------------------
+                   print *,'The trajectory is killed'
+                   print *, thickline !========================================
+                end if
+                errCode = -50
+                if (strict==1) stop
+                call writedata(40)
+                nerror=nerror+1
+                boundError = boundError +1
              end if
-             call writedata(40)
-             nerror=nerror+1
-             boundError = boundError +1
-             errCode = -50
-             if (strict==1) stop
-             call writedata(40)
+             nout = nout + 1 
              nrj(6,ntrac)=1
+             call writedata(17)
           endif
 
        case ('landError')
+          if(ib>imt) then
+             print *,ia,ib,x1,ntrac
+             stop
+          end if
           if(kmt(ib,jb) == 0) then
              if (verbose == 1) then
                 print *, thickline !========================================
@@ -846,13 +854,13 @@ return
                  print *, thickline !========================================
                  print *,'Warning: not find any path for unknown reason '
                  print *, " "
-                 write (*,'(A, E9.3, A, E9.3)'), ' uflux= ', &
+                 write (*,'(A, E9.3, A, E9.3)') ' uflux= ', &
                       uflux(ia,ja,ka,nsm),'  vflux= ', vflux(ia,ja,ka,nsm)
                  call print_ds
                  print *,'---------------------------------------------------'
                  print *,"   ntrac = ",ntrac
                  call print_pos
-                 write (*,'(A7, I10, A7, I10, A7, I10)'), & 
+                 write (*,'(A7, I10, A7, I10, A7, I10)')  & 
                       ' k_inv= ', KM+1-kmt(ia,ja), ' kmt= ', kmt(ia,ja), &
                       'lnd= ', mask(ia,ja)
                  print *, thinline !-----------------------------------------
