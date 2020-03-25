@@ -14,6 +14,11 @@ MODULE mod_getfile
   INTEGER                                    :: ierr, varid,ncid
   LOGICAL                                    :: file_exists
 
+  INTEGER                                    :: sel, ndims, v
+  INTEGER, DIMENSION(4)                      :: dimvec, dimln
+  CHARACTER(len=20)                          :: dimname
+
+
 #ifndef no_netcdf
   CONTAINS
 
@@ -110,7 +115,9 @@ MODULE mod_getfile
     REAL, ALLOCATABLE, DIMENSION(:,:,:)     :: get3dfieldNC
     INTEGER,             DIMENSION(4)       :: d, s, c
     INTEGER                                 :: i,j,k
-
+    !integer                                 :: ncid, status, nDims, nVars
+    !integer                                 :: nGlobalAtts, unlimDimID
+    
     if (ncTpos == 0) then
        print *,"Error: ncTpos, is not set!"
        print *,"   ncTpos is used to define which time slice"
@@ -154,8 +161,15 @@ MODULE mod_getfile
        print *," Bror Jonsson (brorfred@gmail.com) for help."
        stop 999
     end if
+
+    ierr = nf90_inquire_variable(ncid,varid,ndims=ndims,dimids=dimvec)
+    do v = 1,ndims
+       ierr = nf90_inquire_dimension(ncid, dimvec(v), dimname, dimln(v))
+    end do
+
     ierr=NF90_CLOSE(ncid)
 
+    
   end function get3DfieldNC
 
 
@@ -188,6 +202,7 @@ MODULE mod_getfile
        print *,'Error:      ' ,NF90_STRERROR(ierr)
       
        ierr= nf90_inquire_variable(ncid,varid,ndims=ndims,dimids=dimvec)
+       print *, "ndims: ", ndims
        do v = 1,ndims
           ierr = nf90_inquire_dimension(ncid, dimvec(v), dimname, dimln)
           print *,dimname,dimln
