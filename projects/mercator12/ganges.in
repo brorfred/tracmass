@@ -59,10 +59,10 @@
           intmin =      1,
 /
 &INIT_RUN_TIME
-         intspin =     15,
-          intrun =    365,
-   seedintsdelta =      3,
-/
+         intspin =     31,
+          intrun =    730,
+   seedintsdelta =      2,
+/<
 &INIT_WRITE_TRAJS
       twritetype =      2,
   ! kriva:          0 = no writing
@@ -87,9 +87,9 @@
         ntracmax = 20000000,
     loneparticle =      0, !2964,
         seedtype =      1,
-            ist1 =   3100,
-            ist2 =   3347,
-            jst1 =   1075,
+            ist1 =   3200,
+            ist2 =   3300,
+            jst1 =   1200,
             jst2 =   1250,
             kst1 =      1,
             kst2 =      1,

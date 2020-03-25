@@ -42,7 +42,7 @@
    fieldsperfile =      1,
             ngcm =     24,
             iter =      1,
-          intmax =    365,
+          intmax =   1095,
         minveljd =      0,
         maxveljd = 735963,
 /
@@ -50,19 +50,19 @@
         startsec =      0,
         startmin =      0,
        starthour =     12,
-        startday =      5,
+        startday =      1,
         startmon =      1,
-       startyear =   2015,
+       startyear =   2017,
         !jdoffset =      3,
           noleap =  .true., 
          startjd =      -1,
           intmin =      1,
 /
 &INIT_RUN_TIME
-         intspin =     15,
-          intrun =    365,
-   seedintsdelta =      3,
-/
+         intspin =     31,
+          intrun =    360,
+   seedintsdelta =      1,
+/<
 &INIT_WRITE_TRAJS
       twritetype =      2,
   ! kriva:          0 = no writing
@@ -79,7 +79,7 @@
           intpsi =    10, ! write stream functions and tracer
 /
 &INIT_SEEDING
-             nff =      1,
+             nff =     -1,
             isec =      4,
             idir =      0,
             nqua =      1,
@@ -87,10 +87,10 @@
         ntracmax = 20000000,
     loneparticle =      0, !2964,
         seedtype =      1,
-            ist1 =   3100,
-            ist2 =   3347,
-            jst1 =   1075,
-            jst2 =   1250,
+            ist1 =   1325,
+            ist2 =   1375,
+            jst1 =   1400,
+            jst2 =   1500,
             kst1 =      1,
             kst2 =      1,
             tst1 =     -1,
