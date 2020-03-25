@@ -87,7 +87,7 @@ MODULE mod_grid
   INTEGER                                   :: nst=2
   INTEGER                                   :: nsm=1,  nsp=2
   INTEGER                                   :: wnsm=1, wnsp=2
-  INTEGER                                   :: nperio=1
+  INTEGER                                   :: nperio=0
   REAL(DP)                                  :: dx,dy
   REAL(DP)                                  :: dxdeg,dydeg,stlon1,stlat1
   REAL*4, ALLOCATABLE, DIMENSION(:,:,:)   :: hs
