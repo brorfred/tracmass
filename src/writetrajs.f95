@@ -9,7 +9,7 @@ module mod_write
   IMPLICIT NONE
   INTEGER                                    :: intminInOutFile
   CHARACTER(LEN=200)                         :: outDataDir, outDataFile
-  CHARACTER (LEN=200)                        ::  projdir="", ormdir=""
+  CHARACTER (LEN=200)                        :: projdir="", ormdir=""
   CHARACTER(LEN=200)                         :: inargstr1='', inargstr2=''
   INTEGER                                    :: twritetype = 0
   INTEGER                                    :: fileseq = 0
@@ -22,15 +22,18 @@ CONTAINS
 
 
   subroutine setup_outdatadir
-
     if (len(trim(outDataDir)) == 0) then
        CALL getenv('TRMOUTDATADIR', projdir)
        if (len(trim(projdir)) .ne. 0) then
           print *, 'Using outdatdir defined by TRMOUTDATADIR'
-          outDataDir = trim(projdir) // trim(Project) // '/'
+          outDataDir = trim(projdir)  // trim(Project) // '/'
+       else
+          outDataDir = 'outputfiles/' // trim(Project) // '/'          
        end if
     end if
-    if (outdircase .eqv. .true.) outDataDir = trim(outDataDir) // trim(Case) // '/'
+    if (outdircase .eqv. .true.) then
+       outDataDir = trim(outDataDir) // trim(Case) // '/'
+    end if
     if (outdirdate .eqv. .true.) then
        yearstr = 'XXXXXXXX-XXXX'
        write (yearstr(1:4),'(I4.4)') int(startYear)
@@ -41,7 +44,6 @@ CONTAINS
        outDataDir = trim(outDataDir)//trim(yearstr) // '/'
     end if    
     call system('mkdir -p ' // trim(outDataDir))
-    
   end subroutine setup_outdatadir
 
   
