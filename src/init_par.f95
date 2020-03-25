@@ -194,7 +194,7 @@ SUBROUTINE init_params
    
    if ((IARGC() > 2) )  then
       ARG_INT1 = 0.1
-      CALL getarg(2,inparg)
+      CALL getarg(3,inparg)
       if ( ARG_INT1 == 0) then
          read( inparg, '(i15)' ) ARG_INT1
          write( inargstr1, '(A,i9.9 )' ) '_a',ARG_INT1
@@ -203,7 +203,7 @@ SUBROUTINE init_params
          write( inargstr1, '(A,i9.9 )' ) '_a',int(ARG_INT1)
       end if
    end if
-      
+   
    IF ((IARGC() > 3) ) THEN
       ARG_INT2 = 0.1
       CALL getarg(3,inparg)
@@ -230,13 +230,14 @@ SUBROUTINE init_params
       startJD  =  jdate(startYear ,startMon ,startDay) + 1 + &  
            ( dble((startHour)*3600 + startMin*60 + startSec) / 86400 ) -baseJD
    else
-      call  gdate (baseJD + startJD ,startYear , startMon ,startDay)
+      call  gdate (baseJD + startJD - 1,startYear , startMon ,startDay)
       startFrac = (startJD-int(startJD))*24
       startHour = int(startFrac)
       startFrac = (startFrac - startHour) * 60
       startMin  = int(startFrac)
    end if
-   
+   print *, startJD, startDay
+ 
    if (nff == 1) then
       intmin = jd2ints(startJD)
    else
