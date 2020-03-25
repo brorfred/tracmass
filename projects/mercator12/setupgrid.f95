@@ -70,8 +70,9 @@ SUBROUTINE setupgrid
    allocate ( dzu(imt,jmt,km,2),dzv(imt,jmt,km,2), dzt0(imt,jmt,km) )
    dzt0(:,:,km:1:-1) = get3DfieldNC(gridFile, 'e3t')
    where (dzt0 > 10000)
-      dzt0 = 0
+      dzt0 = 1.02248394
    end where
+ 
    dzt(:,:,:,1) = dzt0
    dzt(:,:,:,2) = dzt0
    dzu = dzt
@@ -83,7 +84,7 @@ SUBROUTINE setupgrid
          kmt = kmt + 1
       end where
    end do
-
+   mask = kmt
    !kmt = get2DfieldNC(gridFile, 'mbathy')
    allocate ( kmu(imt,jmt), kmv(imt,jmt) )
    kmu=0 ; kmv=0
@@ -102,8 +103,6 @@ SUBROUTINE setupgrid
       ii = imt + 4 - i
       kmv(i,jmt) = kmv(ii,jmt-3)
    enddo
-  
-   !dzu(:,:,:,1) = get3DfieldNC(gridFile, 'e3t')
-   !dzv(:,:,:,1) = get3DfieldNC(gridFile, 'e3t')
-         
+   kmt = 1
+          
 end SUBROUTINE setupgrid

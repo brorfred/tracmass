@@ -33,7 +33,9 @@ SUBROUTINE readfields
    ! --------------------------------------------------------------------------
    
    ! = Loop variables
-   INTEGER                                       :: i, j, k ,kk, im, ip, jm, jp, imm, ii, jmm, jpp, l
+   INTEGER                                       :: i, j, k ,kk, im, ip
+   INTEGER                                       :: jm, jp, imm, ii
+   INTEGER                                       :: jmm, jpp, l
    INTEGER                                       :: kbot,ktop
    INTEGER, SAVE                                 :: ntempus=0,ntempusb=0,nread
    ! = Variables used for getfield procedures
