@@ -1,7 +1,7 @@
 PROGRAM main
  
   USE mod_seed, only:  nqua, nff, num
-  USE mod_grid, only:  dyu, dxv
+  USE mod_grid, only:  dyu, dxv, mask, kmt
   USE mod_time, only:  intmin, intstart, intend, intspin, intrun, intmax, &
        partQuant, minvelints, voltr
   USE mod_write, only: open_outfiles, close_outfiles
@@ -20,8 +20,8 @@ PROGRAM main
   
   modrundirCond: if(nff == 1) then ! forward 
      intstart =  intmin          
-     intend   =  intmax
-  elseif(nff == 2) then ! backward
+     intend   =  intmin + intrun
+  else ! backward
      intstart =  intmin+intrun
      minvelints = minvelints + intrun
      intend   =  intmin
@@ -31,18 +31,34 @@ PROGRAM main
   end if modrundirCond
 
   call setupgrid
+  if (sum(kmt) == 0) then
+     print *, " "
+     print *, " === Error! === "
+     print *, "The array --kmt-- has only zeros."
+     print *, "Please check your setupgrid.f95 file."
+     stop
+  end if
+  if (sum(mask) == 0) then
+     print *, " "
+     print *, " === Error! === "
+     print *, "The array --mask-- has only zeros."
+     print *, "Please check your setupgrid.f95 file."
+     stop
+  end if
 
+
+  
   if (minval(dxv) < 0) then
      print *, " "
      print *, " === Error! === "
-     print *, "The array dxv contains negative values."
+     print *, "The array --dxv-- contains negative values."
      print *, "Please check your setupgrid.f95 file."
      stop
   end if
   if (minval(dyu) < 0) then
      print *, " "
      print *, " === Error! === "
-     print *, "The array dyu contains negative values."
+     print *, "The array --dyu-- contains negative values."
      print *, "Please check your setupgrid.f95 file."
      stop
   end if
