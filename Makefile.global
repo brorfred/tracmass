@@ -27,6 +27,8 @@ endif
 ifeq ($(NETCDFLIBS),"automatic")
 	LIB_DIR = $(shell nc-config --flibs)
 	INC_DIR = -I$(shell nc-config --includedir)
+	LNK_FLAGS = -lnetcdf -lnetcdff 
+
 endif
 ifeq ($(NETCDFLIBS),"automatic-44")
 	INC_DIR   = $(shell nf-config --cflags) 
@@ -43,11 +45,11 @@ ifeq ($(NETCDFLIBS),"fink")
         LNK_FLAGS        = -lnetcdf -lnetcdff -lsz -Wl,-dead_strip_dylibs
 endif
 
-ifeq ($(F95COMPILER),"gfortran")
-	FF_FLAGS         = -O0 -c -x f95-cpp-input -g -fbacktrace -fbounds-check
+ifneq (,$(findstring gfortran, $(F95COMPILER)))
+	FF_FLAGS         = -O0 -c -x f95-cpp-input -g -fbacktrace -fbounds-check -fPIC
 #	FF_FLAGS         = -O3 -c -x f95-cpp-input  
         F90_FLAGS        = -fno-underscoring 
-	FF              += $(LIB_DIR) $(INC_DIR) $(F90_FLAGS) $(ORM_FLAGS) -pg -J$(OBJDIR)
+	FF              += $(LIB_DIR) $(INC_DIR) $(F90_FLAGS) $(ORM_FLAGS) -pg -J$(OBJDIR) -no-pie
 endif
 ifeq ($(F95COMPILER),"g95")
 	FF_FLAGS         = -c -cpp -fendian=big
