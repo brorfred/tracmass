@@ -9,8 +9,8 @@
         griddesc = '1/12 deg run for the global Ocean.',
 /
 &INIT_CASE_DESCRIPTION
-        casename = 'bob-onr',
-        casedesc = 'Fill the Bay of Bengal with particles.',
+        casename = '',
+        casedesc = 'Follow the Amazon river plume.',
 /
 &INIT_GRID_SIZE
              imt =   4500,
@@ -49,14 +49,14 @@
        starthour =      0,
         startday =      1,
         startmon =      1,
-       startyear =   2014,
+       startyear =   2015,
          startjd =     -1,
           intmin =     50,
 /
 &INIT_RUN_TIME
-         intspin =    365,
-          intrun =    720,
-   seedintsdelta =     14,
+         intspin =   330,
+          intrun =   365,
+!   seedintsdelta =      1,
 /
 &INIT_WRITE_TRAJS
       twritetype =      2,
@@ -67,19 +67,19 @@
 /
 &INIT_SEEDING
              nff =      1,
-            isec =      3,
+            isec =      4,
             idir =      0,
             nqua =      1,
-       partquant =      3,
+       partquant =      2,
         ntracmax = 7000000,
     loneparticle =     -1,
         seedtype =      1,
-            ist1 =    965,
-            ist2 =   1250,
-            jst1 =   1110,
-            jst2 =   1400,
-            kst1 =       1,
-            kst2 =       1,
+            ist1 =   1009,
+            ist2 =   1010,
+            jst1 =    950,
+            jst2 =   1076,
+            kst1 =      1,
+            kst2 =      1,
             tst1 =     -1,
             tst2 =     -1,
          seeddir =     '',
@@ -97,7 +97,7 @@
             iene = 800,800,3,800,
             jens = 0,497,0,0,
             jenn = 3,500,500,500,
-           timax = 365.0,
+           timax = 36500.0,
 /
 &INIT_TEMP_SALT
            tmin0 =  -50.0,

@@ -1,0 +1,42 @@
+&INIT_NAMELIST_VERSION
+      gridvernum =      6,
+/
+&INIT_GRID_DESCRIPTION
+/
+&INIT_CASE_DESCRIPTION
+        casename = 'amazon',
+        casedesc = 'Follow the Amazon river plume.',
+/
+&INIT_GRID_SIZE
+     subgridkmin =      1,
+     subgridkmax =     20,
+/
+&INIT_BASE_TIME
+/
+&INIT_GRID_TIME
+/
+&INIT_START_DATE
+/
+&INIT_RUN_TIME
+         intspin =     1,
+/
+&INIT_WRITE_TRAJS
+/
+&INIT_SEEDING
+    loneparticle =     -1,
+            ist1 =   2600,
+            ist2 =   2602,
+            jst1 =   1500,
+            jst2 =   1502,
+            kst1 =      1,
+            kst2 =     20,
+
+/
+&INIT_KILLZONES
+/
+&INIT_TEMP_SALT
+/
+&INIT_DIFFUSION
+/
+&INIT_SEDIMENT
+/

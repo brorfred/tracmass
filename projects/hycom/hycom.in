@@ -7,7 +7,7 @@
         gridname = 'HYCOM GLBa0.0',
       gridsource = 'http://www.hycom.org',
         griddesc = '1/12 deg run for the global Ocean.',
-       indatadir = '/projData/HYCOM/',
+       indatadir = '/data/guppy/bror/HYCOM2/GLBu0.08/',
 /
 &INIT_CASE_DESCRIPTION
         casename = 'amazon',
@@ -50,7 +50,7 @@
        starthour =      0,
         startday =      1,
         startmon =      1,
-       startyear =   2013,
+       startyear =   2012,
          startjd =     -1,
           intmin =     50,
 /

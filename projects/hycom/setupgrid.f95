@@ -48,7 +48,7 @@ SUBROUTINE setupgrid
   map3d    = [2, 3, 4, 1]
   ncTpos = 1
   !gridfile = trim(inDataDir) // 'hycom_glb_910_2013121800_t000_uv3z.nc'
-  gridfile = trim(inDataDir) // 'hycom_glb_909_2013010100_t000_ts3z.nc'
+  gridfile = trim(inDataDir) // 'glb_2015010100_t000_ts3z.nc'
   start1D  = [subGridImin]
   count1d  = [imt]
   lon =  get1DfieldNC(trim(gridfile) , 'lon')

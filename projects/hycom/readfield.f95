@@ -31,8 +31,8 @@ SUBROUTINE readfields
   
   alloCondGrid: if ( .not. allocated (e1v) ) then
      allocate ( gridLat(IMT,JMT) ,gridLon(IMT,JMT) )
-     allocate ( e1v(IMT+2,JMT)    ,gridDX(IMT+2,JMT) )
-     allocate ( e2u(IMT+2,JMT)    ,gridDY(IMT+2,JMT) )
+     allocate ( e1v(IMT+2,JMT)   ,gridDX(IMT+2,JMT) )
+     allocate ( e2u(IMT+2,JMT)   ,gridDY(IMT+2,JMT) )
      !allocate ( dzu(IMT+2,JMT,KM) ,dzv(IMT+2,JMT,KM),dzt(IMT+2,JMT,KM) )
   end if alloCondGrid
   alloCondUVW: if(.not. allocated (ssh)) then
@@ -45,23 +45,17 @@ SUBROUTINE readfields
   ! === update the time counting ===
   if (currJDyr==366) currJDyr=365
   dstamp   = 'archv.0000_000_00_'
-  dstamp   = 'hycom_glb_909_YYYYMMDD00_t000_uv3z.nc'        
+  dstamp   = 'glb_YYYYMMDD00_t000_uv3z.nc'        
 
-  write (dstamp(15:18),'(i4.4)') int(curryear)
-  write (dstamp(19:20),'(i2.2)') int(currmon)
-  write (dstamp(21:22),'(i2.2)') int(currday)
+  write (dstamp(5:8),'(i4.4)') int(curryear)
+  write (dstamp(9:10),'(i2.2)') int(currmon)
+  write (dstamp(11:12),'(i2.2)') int(currday)
   
-  if (currjdtot > 735096) write (dstamp(11:13),'(A3)') "910"
-
   filename = trim(inDataDir)//trim(dstamp)
   uvel = get3DfieldNC(trim(filename) ,'water_u') * 0.001
   where (uvel<-10) uvel=0
   vvel = get3DfieldNC(trim(filename) ,'water_v') * 0.001
   where (vvel<-10) vvel=0
-  if (nff .eq. -1) then
-     uvel = -uvel
-     vvel = -vvel
-  end if
 
   hs(1:imt,1:jmt,2) = 0.01*ssh
   hs(imt+1,:,2) =hs(1,:,2)
@@ -79,9 +73,6 @@ SUBROUTINE readfields
   !vflux(:,:,km,2) = vvel(:,:,1) * e1v * (dzv(:,:,1,1) & 
   !     + 0.5*(hs(:,:,2) + hs(:,2:jmt+1,2)))
   !rho(:,:,km,2)   = rhof(:,:,1)
-
-
-
   return
 
 end subroutine readfields
